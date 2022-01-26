@@ -17,4 +17,4 @@ jobs:
         server: ftp.onetakego.com
         username: u543164490
         password: ${{ secrets.ftp_password }}
-        server-dir: /public_html/acoder/laravel/wall/
+        local-dir: ./acoder/wall/
