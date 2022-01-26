@@ -9,6 +9,7 @@ class Wall extends Model
 {
     use HasFactory;
 
+    protected $perPage = 16;
 
     // settagsAttribute
     public function setTagsAttribute($value)
