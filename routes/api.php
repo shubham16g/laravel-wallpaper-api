@@ -22,6 +22,7 @@ Route::prefix('/category')->group(function () {
 Route::prefix('/wall')->group(function () {
     // route to get all walls
     Route::get('/', [WallController::class, 'index']);
+    Route::get('/{id}', [WallController::class, 'category']);
 
     // route to add new wall
     Route::post('/', [WallController::class, 'store']);

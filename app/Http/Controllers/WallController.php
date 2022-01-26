@@ -9,9 +9,51 @@ class WallController extends Controller
 {
 
 
-    public function index()
+    public function index(Request $request)
     {
-        $walls = Wall::all();
+        if ($request->has('s')) {
+
+            $query = $request->s;
+
+            $orderByString = "case
+                when name LIKE '$query%' then 1
+                when name LIKE '%$query%'  then 2
+                when tags LIKE '\"$query%' then 3
+                when tags LIKE '%$query%'  then 4 ";
+
+            $walls = Wall::query();
+            $walls->where('name', 'like', '%' . $query . '%');
+            $walls->orWhere('tags', 'like', '%' . $query . '%');
+
+            $subQueries = explode(' ', $query, 3);
+
+            $counter = 5;
+
+            foreach ($subQueries as $q) {
+                $walls->orWhere('name', 'like', '%' . $q . '%');
+                $walls->orWhere('tags', 'like', '%' . $q . '%');
+                $orderByString .= " when name LIKE '$q%' then $counter ";
+                $counter++;
+                $orderByString .= " when name LIKE '%$q%' then $counter ";
+                $counter++;
+                $orderByString .= " when tags LIKE '\"$q%' then $counter ";
+                $counter++;
+                $orderByString .= " when tags LIKE '%$q%'  then $counter ";
+                $counter++;
+            }
+
+            return $walls->orderByRaw($orderByString . " else $counter end")->paginate();
+        } else {
+            $walls = Wall::paginate();
+            return $walls;
+        }
+    }
+
+    public function category($id)
+    {
+        // where json array contains id in categories column
+        $walls = Wall::whereRaw("JSON_CONTAINS(JSON_EXTRACT(categories, '$'), '{$id}')")->paginate();
+
         return $walls;
     }
 
@@ -19,24 +61,24 @@ class WallController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'source' => 'required|string|max:255',
-            'color' => 'required|string|max:10',
+            'name' => 'required|query|max:255',
+            'source' => 'required|query|max:255',
+            'color' => 'required|query|max:10',
 
             'tags' => 'required|array',
-            'tags.*' => 'required|string|max:50',
+            'tags.*' => 'required|query|max:50',
 
             'urls' => 'required|array',
-            'urls.*.full' => 'required|string|max:255',
-            'urls.*.small' => 'required|string|max:255',
-            'urls.*.raw' => 'nullable|string|max:255',
-            'urls.*.regular' => 'nullable|string|max:255',
+            'urls.*.full' => 'required|query|max:255',
+            'urls.*.small' => 'required|query|max:255',
+            'urls.*.raw' => 'nullable|query|max:255',
+            'urls.*.regular' => 'nullable|query|max:255',
 
             'categories' => 'required|array',
             'categories.*' => 'required|integer|exists:categories,category_id',
 
-            'license' => 'nullable|string|max:255',
-            'author' => 'nullable|string|max:100',
+            'license' => 'nullable|query|max:255',
+            'author' => 'nullable|query|max:100',
             'coins' => 'nullable|integer',
         ]);
 
@@ -58,5 +100,4 @@ class WallController extends Controller
 
         return $wall;
     }
-
 }
