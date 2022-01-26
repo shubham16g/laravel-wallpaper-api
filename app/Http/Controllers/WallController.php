@@ -61,41 +61,39 @@ class WallController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|query|max:255',
-            'source' => 'required|query|max:255',
-            'color' => 'required|query|max:10',
+            'name' => 'required|max:255',
+            'source' => 'required|max:255',
+            'color' => 'required|max:10',
 
             'tags' => 'required|array',
-            'tags.*' => 'required|query|max:50',
+            'tags.*' => 'required|max:50',
 
             'urls' => 'required|array',
-            'urls.*.full' => 'required|query|max:255',
-            'urls.*.small' => 'required|query|max:255',
-            'urls.*.raw' => 'nullable|query|max:255',
-            'urls.*.regular' => 'nullable|query|max:255',
+            'urls.full' => 'required|max:255',
+            'urls.small' => 'required|max:255',
+            'urls.raw' => 'nullable|max:255',
+            'urls.regular' => 'nullable|max:255',
 
             'categories' => 'required|array',
             'categories.*' => 'required|integer|exists:categories,category_id',
 
-            'license' => 'nullable|query|max:255',
-            'author' => 'nullable|query|max:100',
+            'license' => 'nullable|max:255',
+            'author' => 'nullable|max:100',
             'coins' => 'nullable|integer',
         ]);
 
         $wall = new Wall();
         $wall->name = $data['name'];
-        $wall->tags = $data['tags'];
         $wall->source = $data['source'];
         $wall->color = $data['color'];
+        $wall->tags = $data['tags'];
         $wall->urls = $data['urls'];
         $wall->categories = $data['categories'];
         $wall->license = $data['license'];
         $wall->author = $data['author'];
-        $wall->downloads = $data['downloads'];
         if (isset($data['coins'])) {
             $wall->coins = $data['coins'];
         }
-        $wall->previewUrls = $data['previewUrls'];
         $wall->save();
 
         return $wall;

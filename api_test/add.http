@@ -1,13 +1,43 @@
-POST http://127.0.0.1:8000/api/category HTTP/1.1
+POST http://wallpaper.onetakego.com/api/category HTTP/1.1
 Content-Type: application/json
 Accept: application/json
 
 {
-    "name": "Technology",
+    "name": "Nature",
     "preview_urls": [
         "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bmF0dXJlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
         "https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTJ8fG5hdHVyZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
         "https://images.unsplash.com/photo-1431794062232-2a99a5431c6c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzJ8fG5hdHVyZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
     ]
+}
+###
+
+# POST http://wallpaper.onetakego.com/api/wall HTTP/1.1
+POST http://localhost:8000/api/wall HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Mountain Hills",
+    "source": "https://images.unsplash.com/image-web-page-url",
+    "color": "#0099ff",
+    "tags": [
+        "nature",
+        "sky",
+        "valley",
+        "peak"
+    ],
+    "urls": {
+        "full":"https://images.unsplash.com/photo-high-quality-url",
+        "small":"https://images.unsplash.com/photo-low-quality-url",
+        "raw":"https://images.unsplash.com/photo-max-quality-url-OPTIONAL",
+        "regular":"https://images.unsplash.com/photo-average-quality-url-OPTIONAL"
+    },
+    "categories": [
+        1,
+        9
+    ],
+    "license": "CC0-OPTIONAL",
+    "author": "Mogli Nath Anna-OPTIONAL"
 }
 ###
