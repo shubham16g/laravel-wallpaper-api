@@ -15,6 +15,16 @@ class CreateWallsTable extends Migration
     {
         Schema::create('walls', function (Blueprint $table) {
             $table->id();
+            $table->string("name", 255);
+            $table->string("tags", 255);
+            $table->string("source", 255);
+            $table->string("color", 10);
+            $table->json('urls')->nullable();
+            $table->json('categories')->nullable();
+            $table->string("license", 255)->nullable();
+            $table->string("author", 100)->nullable();
+            $table->integer("downloads")->default(0);
+            $table->integer("coins")->default(0);
             $table->timestamps();
         });
     }
