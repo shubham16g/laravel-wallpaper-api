@@ -13,5 +13,19 @@ class Category extends Model
     // primary key
     protected $primaryKey = 'category_id';
 
+    public function setPreviewUrlsAttribute($value)
+    {
+        $array = [];
+        foreach ($value as $url) {
+            $array[] = $url;
+        }
+        $this->attributes['preview_urls'] = json_encode($array);
+    }
+
+    // getPreviewUrlsAttribute
+    public function getPreviewUrlsAttribute($value)
+    {
+        return json_decode($value);
+    }
 
 }
