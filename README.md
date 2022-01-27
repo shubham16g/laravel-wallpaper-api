@@ -1,4 +1,4 @@
-# Instalation:
+# Installation:
 
 - Clone this repository and to load required dependencies run
 
@@ -24,21 +24,20 @@ php artisan migrate
 ```
 php artisan serve
 ```
-*******************************************************************************
 
 # REST API Documentation:
 
 ## Base URL:
 ```
 http://127.0.0.1:8000/api/
-
 ```
 ### Global Headers:
 
+```
 Accept: application/json
 Authorization: Bearer YOUR_API_KEY
+```
 
-*******************************************************************************
 ### For Wallpapers:
 ```
 GET wall/
@@ -75,7 +74,7 @@ Content-Type: application/json
 }
 
 ```
-************************************************************
+
 ### For Categories:
 ```
 GET category/
@@ -92,4 +91,3 @@ Content-Type: application/json
     ]
 }
 ```
-
