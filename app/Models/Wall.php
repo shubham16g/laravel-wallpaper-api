@@ -16,7 +16,7 @@ class Wall extends Model
     {
         $array = [];
         foreach ($value as $tag) {
-            $array[] = $tag;
+            $array[] = strtolower($tag);
         }
         $this->attributes['tags'] = json_encode($array);
     }
@@ -42,8 +42,8 @@ class Wall extends Model
     public function setCategoriesAttribute($value)
     {
         $array = [];
-        foreach ($value as $category_id) {
-            $array[] = $category_id;
+        foreach ($value as $category_name) {
+            $array[] = strtolower($category_name);
         }
         $this->attributes['categories'] = json_encode($array);
     }

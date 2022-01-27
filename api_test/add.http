@@ -1,9 +1,9 @@
-POST http://wallpaper.onetakego.com/api/category HTTP/1.1
+POST http://localhost:8000/api/category HTTP/1.1
 Content-Type: application/json
 Accept: application/json
 
 {
-    "name": "Nature",
+    "name": "Technology",
     "preview_urls": [
         "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bmF0dXJlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
         "https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTJ8fG5hdHVyZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
@@ -11,33 +11,29 @@ Accept: application/json
     ]
 }
 ###
-
 # POST http://wallpaper.onetakego.com/api/wall HTTP/1.1
+
 POST http://localhost:8000/api/wall HTTP/1.1
 Content-Type: application/json
 Accept: application/json
 
 {
-    "name": "Mountain Hills",
-    "source": "https://images.unsplash.com/image-web-page-url",
-    "color": "#0099ff",
+    "name": "Appolo Car",
+    "source": "https://unsplash.com/photos/oR0uERTVyD0",
+    "color": "#348c9f",
     "tags": [
-        "nature",
-        "sky",
-        "valley",
-        "peak"
+        "space",
+        "vehicle",
+        "road"
     ],
     "urls": {
-        "full":"https://images.unsplash.com/photo-high-quality-url",
-        "small":"https://images.unsplash.com/photo-low-quality-url",
-        "raw":"https://images.unsplash.com/photo-max-quality-url-OPTIONAL",
-        "regular":"https://images.unsplash.com/photo-average-quality-url-OPTIONAL"
+        "full":"https://images.unsplash.com/photo-1540206395-68808572332f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1526&q=80",
+        "small":"https://images.unsplash.com/photo-1540206395-68808572332f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8bmF0dXJlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
     },
     "categories": [
-        1,
-        9
+        "Technology"
     ],
-    "license": "CC0-OPTIONAL",
-    "author": "Mogli Nath Anna-OPTIONAL"
+    "license": "Unsplash License",
+    "author": "Islam Ali"
 }
 ###

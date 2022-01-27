@@ -5,54 +5,80 @@ namespace App\Http\Controllers;
 use App\Models\Wall;
 use Illuminate\Http\Request;
 
+use function PHPUnit\Framework\isEmpty;
+
 class WallController extends Controller
 {
 
 
-    public function index(Request $request)
+    public function index(Request $request, $category = null)
     {
+        $category = strtolower($category);
+
+        $walls = Wall::query();
+
+        if ($category != null) {
+            $walls->whereRaw("JSON_CONTAINS(lower(JSON_EXTRACT(categories, '$')), '\"{$category}\"')");
+        }
+
         if ($request->has('s')) {
 
-            $query = $request->s;
+            $query = strtolower($request->s);
 
             $orderByString = "case
                 when name LIKE '$query%' then 1
-                when name LIKE '%$query%'  then 2
-                when tags LIKE '\"$query%' then 3
-                when tags LIKE '%$query%'  then 4 ";
+                when tags LIKE '\"$query%' then 2
+                when categories LIKE '%$query%' then 3
+                when name LIKE '%$query%' then 4
+                when tags LIKE '%$query%' then 5 ";
+            $counter = 6;
 
-            $walls = Wall::query();
-            $walls->where('name', 'like', '%' . $query . '%');
-            $walls->orWhere('tags', 'like', '%' . $query . '%');
+            global $orderByArray;
+            $orderByArray = [];
+            $walls->where(function ($whereQuery) use ($query) {
 
-            $subQueries = explode(' ', $query, 3);
+                global $orderByArray;
+                $whereQuery->where('name', 'like', '%' . $query . '%');
+                $whereQuery->orWhere('categories', 'like', '%' . $query . '%');
+                $whereQuery->orWhere('tags', 'like', '%' . $query . '%');
 
-            $counter = 5;
+                $subQueries = explode(' ', $query, 3);
 
-            foreach ($subQueries as $q) {
-                $walls->orWhere('name', 'like', '%' . $q . '%');
-                $walls->orWhere('tags', 'like', '%' . $q . '%');
-                $orderByString .= " when name LIKE '$q%' then $counter ";
-                $counter++;
-                $orderByString .= " when name LIKE '%$q%' then $counter ";
-                $counter++;
-                $orderByString .= " when tags LIKE '\"$q%' then $counter ";
-                $counter++;
-                $orderByString .= " when tags LIKE '%$q%'  then $counter ";
-                $counter++;
+                foreach ($subQueries as $q) {
+                    $whereQuery->orWhere('name', 'like', '%' . $q . '%');
+                    $whereQuery->orWhere('categories', 'like', '%' . $q . '%');
+                    $whereQuery->orWhere('tags', 'like', '%' . $q . '%');
+                    $orderByArray[] =
+                        [
+                            " when name LIKE '$q%' then ",
+                            " when tags LIKE '\"$q%' then ",
+                            " when categories LIKE '%$q%' then ",
+                            " when name LIKE '%$q%' then ",
+                            " when tags LIKE '%$q%'  then "
+                        ];
+                }
+            });
+            if (!isEmpty($orderByArray)) {
+
+                $orderByArr = array_map(null, ...$orderByArray);
+
+                foreach ($orderByArr as $value) {
+                    foreach ($value as $str) {
+                        $orderByString .= $str . ' ' . $counter++;
+                    }
+                }
             }
 
-            return $walls->orderByRaw($orderByString . " else $counter end")->paginate();
-        } else {
-            $walls = Wall::paginate();
-            return $walls;
+            $walls->orderByRaw($orderByString . " else $counter end");
         }
+        return $walls->paginate();
     }
 
-    public function category($id)
+    public function category($category)
     {
+        $category = strtolower($category);
         // where json array contains id in categories column
-        $walls = Wall::whereRaw("JSON_CONTAINS(JSON_EXTRACT(categories, '$'), '{$id}')")->paginate();
+        $walls = Wall::whereRaw("JSON_CONTAINS(lower(JSON_EXTRACT(categories, '$')), '\"{$category}\"')")->paginate();
 
         return $walls;
     }
@@ -75,7 +101,7 @@ class WallController extends Controller
             'urls.regular' => 'nullable|max:255',
 
             'categories' => 'required|array',
-            'categories.*' => 'required|integer|exists:categories,category_id',
+            'categories.*' => 'required|string|exists:categories,name',
 
             'license' => 'nullable|max:255',
             'author' => 'nullable|max:100',

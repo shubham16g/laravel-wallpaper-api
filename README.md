@@ -1,18 +1,51 @@
-# Base URL:
-```
-http://example.com/api/
+# Instalation:
+
+- Clone this repository and to load required dependencies run
 
 ```
-## Global Headers:
+composer install
+```
+
+- Create your own .env with the help of .env.example
+
+- In .env provide your db configration and also add a new API_KEY. You can replace YOUR_API_KEY with any random string which is used to authenticate your REST API requests.
+
+```
+API_KEY=YOUR_API_KEY
+```
+
+- Now Run
+```
+php artisan config:cache
+php artisan migrate
+```
+
+- Your server is ready to serve
+```
+php artisan serve
+```
+*******************************************************************************
+
+# REST API Documentation:
+
+## Base URL:
+```
+http://127.0.0.1:8000/api/
+
+```
+### Global Headers:
 
 Accept: application/json
+Authorization: Bearer YOUR_API_KEY
 
 *******************************************************************************
-## Wallpapers:
+### For Wallpapers:
 ```
 GET wall/
 GET wall/?page=2
 GET wall/?s=bikes
+GET <category-name>/wall/?page=5
+GET <category-name>/wall/?s=hills&page=5
 
 POST wall/
 Content-Type: application/json
@@ -34,8 +67,8 @@ Content-Type: application/json
         "regular":"https://images.unsplash.com/photo-average-quality-url-OPTIONAL"
     },
     "categories": [
-        1,
-        9
+        "nature",
+        "skys"
     ],
     "license": "CC0-OPTIONAL",
     "author": "Mogli Nath Anna-OPTIONAL"
@@ -43,7 +76,7 @@ Content-Type: application/json
 
 ```
 ************************************************************
-## Categories
+### For Categories:
 ```
 GET category/
 

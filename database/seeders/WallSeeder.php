@@ -17,14 +17,14 @@ class WallSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $wall = new Wall();
             $wall->name = $faker->word;
             $wall->tags = [$faker->word];
             $wall->source = $faker->url;
             $wall->color = $faker->hexColor;
             $wall->urls = ["full"=> $faker->url, "small"=>$faker->url];
-            $wall->categories = [2];
+            $wall->categories = ["technology", "nature"];
             $wall->license = $faker->word;
             $wall->author = $faker->name;
             $wall->save();
