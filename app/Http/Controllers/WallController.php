@@ -71,6 +71,11 @@ class WallController extends Controller
 
             $walls->orderByRaw($orderByString . " else $counter end");
         }
+
+        if ($request->order_by == 'downloads') {
+            $walls->orderBy('downloads', "DESC");
+        }
+        $walls->orderBy('created_at', "DESC");
         return $walls->paginate();
     }
 
@@ -88,7 +93,7 @@ class WallController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|max:255',
-            'source' => 'required|max:255|exists:walls,source',
+            'source' => 'required|max:255|unique:walls',
             'color' => 'required|max:10',
 
             'tags' => 'required|array',
@@ -105,6 +110,8 @@ class WallController extends Controller
 
             'license' => 'nullable|max:255',
             'author' => 'nullable|max:100',
+            'author_portfolio' => 'nullable|max:255',
+            'author_image' => 'nullable|max:255',
             'coins' => 'nullable|integer',
         ]);
 
@@ -117,12 +124,14 @@ class WallController extends Controller
         $wall->categories = $data['categories'];
         $wall->license = $data['license'];
         $wall->author = $data['author'];
+        $wall->author_portfolio = $data['author_portfolio'];
+        $wall->author_image = $data['author_image'];
         if (isset($data['coins'])) {
             $wall->coins = $data['coins'];
         }
         $wall->save();
 
-        return $wall;
+        return response()->json(['message' => 'Wallpaper added successfully']);
     }
 
     // delete wallpaper
@@ -132,6 +141,15 @@ class WallController extends Controller
         if ($wall != null) {
             $wall->delete();
             return response()->json(['message' => 'Wallpaper deleted successfully']);
+        }
+        return response()->json(['message' => 'No Wallpaper found with given id'], 404);
+    }
+
+    public function download($id)
+    {
+        $wall = Wall::where('id', $id)->increment('downloads');
+        if ($wall) {
+            return response()->json(['message' => 'Wallpaper downloaded successfully']);
         }
         return response()->json(['message' => 'No Wallpaper found with given id'], 404);
     }

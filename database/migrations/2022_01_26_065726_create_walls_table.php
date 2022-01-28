@@ -23,6 +23,8 @@ class CreateWallsTable extends Migration
             $table->json('urls');
             $table->string("license", 255)->nullable();
             $table->string("author", 100)->nullable();
+            $table->string("author_portfolio", 255)->nullable();
+            $table->string("author_image", 255)->nullable();
             $table->integer("downloads")->default(0);
             $table->integer("coins")->default(0);
             $table->timestamps();

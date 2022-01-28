@@ -24,9 +24,11 @@ class WallSeeder extends Seeder
             $wall->source = $faker->url;
             $wall->color = $faker->hexColor;
             $wall->urls = ["full"=> $faker->url, "small"=>$faker->url];
-            $wall->categories = ["technology", "nature"];
+            $wall->categories = ["nature"];
             $wall->license = $faker->word;
             $wall->author = $faker->name;
+            $wall->author_portfolio = $faker->url;
+            $wall->author_image = $faker->url;
             $wall->save();
         }
     }

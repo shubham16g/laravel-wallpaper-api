@@ -23,5 +23,6 @@ Route::prefix('/wall')->group(function () {
     Route::get('/', [WallController::class, 'index']);
     Route::post('/', [WallController::class, 'store']);
     Route::delete('/{id}', [WallController::class, 'destroy']);
+    Route::get('/download/{id}', [WallController::class, 'download']);
 });
 Route::get('/{category}/wall', [WallController::class, 'index']);

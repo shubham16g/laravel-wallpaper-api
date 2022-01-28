@@ -46,8 +46,12 @@ NOTE: In Authorization header, pass either `YOUR_API_KEY` or `YOUR_ADMIN_KEY`. W
 GET wall/
 GET wall/?page=2
 GET wall/?s=bikes
+GET wall/?order_by=downloads
 GET <category-name>/wall/?page=5
 GET <category-name>/wall/?s=hills&page=5
+
+GET wall/download/{id}
+DELETE wall/{id}
 
 POST wall/
 Content-Type: application/json
@@ -73,10 +77,10 @@ Content-Type: application/json
         "skys"
     ],
     "license": "CC0-OPTIONAL",
-    "author": "Mogli Nath Anna-OPTIONAL"
+    "author": "Mogli Nath Anna-OPTIONAL",
+    "author_portfolio": "https://images.unsplash.com/@mogli-nath-anna-OPTIONAL",
+    "author_image": "https://images.unsplash.com/mogli-image-OPTIONAL",
 }
-
-DELETE wall/{id}
 
 ```
 
