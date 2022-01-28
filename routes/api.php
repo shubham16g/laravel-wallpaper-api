@@ -18,6 +18,10 @@ Route::prefix('/category')->group(function () {
     Route::post('/', [CategoryController::class, 'store']);
 });
 
+// route postfix group
+Route::prefix('/wall')->group(function () {
+    Route::get('/', [WallController::class, 'index']);
+    Route::post('/', [WallController::class, 'store']);
+    Route::delete('/{id}', [WallController::class, 'destroy']);
+});
 Route::get('/{category}/wall', [WallController::class, 'index']);
-Route::get('/wall', [WallController::class, 'index']);
-Route::post('/wall', [WallController::class, 'store']);

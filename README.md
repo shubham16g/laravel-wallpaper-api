@@ -8,10 +8,12 @@ composer install
 
 - Create your own .env with the help of .env.example
 
-- In .env provide your db configration and also add a new API_KEY. You can replace YOUR_API_KEY with any random string which is used to authenticate your REST API requests.
+- In .env provide your db configration and also add a new API_KEY and ADMIN_KEY. You can replace these with any random string which is used to authenticate your REST API requests.
 
 ```
 API_KEY=YOUR_API_KEY
+
+ADMIN_KEY=YOUR_ADMIN_KEY
 ```
 
 - Now Run
@@ -35,8 +37,9 @@ http://127.0.0.1:8000/api/
 
 ```
 Accept: application/json
-Authorization: Bearer YOUR_API_KEY
+Authorization: Bearer <YOUR_API_KEY or YOUR_ADMIN_KEY>
 ```
+NOTE: In Authorization header, pass either `YOUR_API_KEY` or `YOUR_ADMIN_KEY`. With `YOUR_API_KEY`, you can only send GET requests but with `YOUR_ADMIN_KEY`, you can access all the Requests i.e. GET, POST, DELETE, etc. It is recommanded to put only `YOUR_API_KEY` in your user's App.
 
 ### For Wallpapers:
 ```
@@ -72,6 +75,8 @@ Content-Type: application/json
     "license": "CC0-OPTIONAL",
     "author": "Mogli Nath Anna-OPTIONAL"
 }
+
+DELETE wall/{id}
 
 ```
 

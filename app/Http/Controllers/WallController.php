@@ -88,7 +88,7 @@ class WallController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|max:255',
-            'source' => 'required|max:255',
+            'source' => 'required|max:255|exists:walls,source',
             'color' => 'required|max:10',
 
             'tags' => 'required|array',
@@ -123,5 +123,16 @@ class WallController extends Controller
         $wall->save();
 
         return $wall;
+    }
+
+    // delete wallpaper
+    public function destroy($id)
+    {
+        $wall = Wall::find($id);
+        if ($wall != null) {
+            $wall->delete();
+            return response()->json(['message' => 'Wallpaper deleted successfully']);
+        }
+        return response()->json(['message' => 'No Wallpaper found with given id'], 404);
     }
 }
