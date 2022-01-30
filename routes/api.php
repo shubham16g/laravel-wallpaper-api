@@ -13,7 +13,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/add/{type}', [AllTagController::class, 'store']);
 
 
-Route::get('/category', [AllTagController::class, 'index']);
+Route::get('/list/{type}', [AllTagController::class, 'index']);
 
 // route postfix group
 Route::prefix('/wall')->group(function () {
@@ -22,4 +22,3 @@ Route::prefix('/wall')->group(function () {
     Route::delete('/{id}', [WallController::class, 'destroy']);
     Route::get('/download/{id}', [WallController::class, 'download']);
 });
-Route::get('/{category}/wall', [WallController::class, 'index']);

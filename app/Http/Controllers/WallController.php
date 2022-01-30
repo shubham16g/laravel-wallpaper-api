@@ -13,74 +13,96 @@ class WallController extends Controller
 {
 
 
-    public function index(Request $request, $category = null)
+    public function index(Request $request)
     {
-        $category = strtolower($category);
 
-        $walls = Wall::query();
+        $color = $request->color;
+        $category = $request->category;
+        $s = $request->s;
 
-        if ($category != null) {
-            $walls->whereRaw("JSON_CONTAINS(lower(JSON_EXTRACT(categories, '$')), '\"{$category}\"')");
+        $request->validate([
+            'order_by' => 'nullable|in:downloads,newest',
+        ]);
+
+        $walls = Wall::with('allTags');
+
+        if ($category != null && strlen($category) > 2) {
+
+            $walls->whereHas('allTags', function ($query) use ($category) {
+                $query->where('name', '=', $category)->where('type', '=', "category");
+            });
+        }
+        if ($color != null && strlen($color) > 2) {
+            $walls->whereHas('allTags', function ($query) use ($color) {
+                $query->where('name', '=', $color)->where('type', '=', "color");
+            });
         }
 
-        if ($request->has('s')) {
-
-            $query = strtolower($request->s);
-
-            $orderByString = "case
-                when tags LIKE '\"$query%' then 1
-                when categories LIKE '%$query%' then 2
-                when tags LIKE '%$query%' then 3 ";
-            $counter = 4;
-
+        if ($s != null && strlen($s) > 0) {
             global $orderByArray;
             $orderByArray = [];
-            $walls->where(function ($whereQuery) use ($query) {
-
-                global $orderByArray;
-                $whereQuery->where('categories', 'like', '%' . $query . '%');
-                $whereQuery->orWhere('tags', 'like', '%' . $query . '%');
-
-                $subQueries = explode(' ', $query, 3);
-
-                foreach ($subQueries as $q) {
-                    $whereQuery->orWhere('categories', 'like', '%' . $q . '%');
-                    $whereQuery->orWhere('tags', 'like', '%' . $q . '%');
+            $walls->whereHas('allTags', function ($query) use ($s) {
+                $subQueries = explode(' ', $s, 5);
+                for ($i = 0; $i < count($subQueries); $i++) {
+                    $sq = $subQueries[$i];
+                    if ($i == 0) {
+                        $query->where('name', 'like', "%$sq%");
+                    } else {
+                        $query->orWhere('name', 'like', "%$sq%");
+                    }
                     $orderByArray[] =
                         [
-                            " when tags LIKE '\"$q%' then ",
-                            " when categories LIKE '%$q%' then ",
-                            " when tags LIKE '%$q%'  then "
+                            " when tags LIKE '$sq'  then ",
+                            " when tags LIKE '$sq%'  then ",
+                            " when tags LIKE '%$sq%'  then "
                         ];
                 }
             });
             if (!isEmpty($orderByArray)) {
 
                 $orderByArr = array_map(null, ...$orderByArray);
-
+                $orderByString = '';
+                $counter = 1;
                 foreach ($orderByArr as $value) {
                     foreach ($value as $str) {
                         $orderByString .= $str . ' ' . $counter++;
                     }
                 }
+                $walls->orderByRaw("case " . $orderByString . " else $counter end");
             }
-            $walls->orderByRaw($orderByString . " else $counter end");
+
         }
 
         if ($request->order_by == 'downloads') {
             $walls->orderBy('downloads', "DESC");
         }
         $walls->orderBy('created_at', "DESC");
-        return $walls->paginate();
+        return $this->filter(((object)$walls->paginate())->toArray());
     }
 
-    public function category($category)
-    {
-        $category = strtolower($category);
-        // where json array contains id in categories column
-        $walls = Wall::whereRaw("JSON_CONTAINS(lower(JSON_EXTRACT(categories, '$')), '\"{$category}\"')")->paginate();
-
-        return $walls;
+    private function filter(array $response) {
+        foreach ($response['data'] as $key => $wall) {
+            $response['data'][$key]['colors'] = [];
+            $response['data'][$key]['tags'] = [];
+            $response['data'][$key]['categories'] = [];
+            foreach ($wall['all_tags'] as $tag) {
+                if ($tag['type'] == 'category') {
+                    $response['data'][$key]['categories'][] = $tag['name'];
+                } elseif ($tag['type'] == 'color') {
+                    $response['data'][$key]['colors'][] = $tag['name'];
+                } else {
+                    $response['data'][$key]['tags'][] = $tag['name'];
+                }
+            }
+            unset($response['data'][$key]['all_tags']);
+        }
+        unset($response['links']);
+        unset($response['first_page_url']);
+        unset($response['last_page_url']);
+        unset($response['next_page_url']);
+        unset($response['prev_page_url']);
+        unset($response['path']);
+        return $response;
     }
 
 
@@ -147,13 +169,6 @@ class WallController extends Controller
 
         return response()->json(['message' => 'Wallpaper added successfully']);
     }
-
-    /* private function findInAllTags($name, $type)
-    {
-        $tag = AllTag::where('name', $name)->where('type', $type)->first();
-        if ($tag == null) return null;
-        return $tag->all_tag_id;
-    } */
 
     // delete wallpaper
     public function destroy($id)

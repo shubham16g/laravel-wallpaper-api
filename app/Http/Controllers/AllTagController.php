@@ -8,9 +8,13 @@ use Illuminate\Http\Request;
 class AllTagController extends Controller
 {
 
-    public function index()
+    public function index(Request $request, $type)
     {
-        $categories = AllTag::where('type', 'category')->get();
+        $request->merge(['type' => $type]);
+        $request->validate([
+            'type' => 'required|string|max:100|in:category,color',
+        ]);
+        $categories = AllTag::where('type', $type)->get(['all_tag_id', 'name', 'popularity']);
         return $categories;
     }
 

@@ -46,9 +46,12 @@ NOTE: In Authorization header, pass either `YOUR_API_KEY` or `YOUR_ADMIN_KEY`. W
 GET wall/
 GET wall/?page=2
 GET wall/?s=bikes
+GET wall/?category=nature
+GET wall/?color=red
+
 GET wall/?order_by=downloads
-GET <category-name>/wall/?page=5
-GET <category-name>/wall/?s=hills&page=5
+GET wall/?order_by=newest
+
 
 GET wall/download/{id}
 DELETE wall/{id}
@@ -59,12 +62,6 @@ Content-Type: application/json
 {
     "source": "https://images.unsplash.com/image-web-page-url",
     "color": "#0099ff",
-    "tags": [
-        "nature",
-        "sky",
-        "valley",
-        "peak"
-    ],
     "urls": {
         "full":"https://images.unsplash.com/photo-high-quality-url",
         "small":"https://images.unsplash.com/photo-low-quality-url",
@@ -73,7 +70,17 @@ Content-Type: application/json
     },
     "categories": [
         "nature",
-        "skys"
+        "amoled"
+    ],
+    "colors": [
+        "blue",
+        "white"
+    ],
+    "tags": [
+        "nature",
+        "sky",
+        "valley",
+        "peak"
     ],
     "license": "CC0-OPTIONAL",
     "author": "Mogli Nath Anna-OPTIONAL",
@@ -83,19 +90,22 @@ Content-Type: application/json
 
 ```
 
-### For Categories:
+### For Categories and Colors:
 ```
-GET category/
+GET list/category
+GET list/color
 
-POST category/
+POST add/category
 Content-Type: application/json
 
 {
-    "name": "Nature",
-    "preview_urls": [
-        "https://images.unsplash.com/photo-1469474968028",
-        "https://images.unsplash.com/photo-1475924156734",
-        "https://images.unsplash.com/photo-1431794062232"
-    ]
+    "name": "Nature"
+}
+
+POST add/color
+Content-Type: application/json
+
+{
+    "name": "Blue"
 }
 ```
