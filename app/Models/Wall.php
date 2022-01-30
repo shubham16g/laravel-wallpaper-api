@@ -11,19 +11,12 @@ class Wall extends Model
 
     protected $perPage = 16;
 
-    // settagsAttribute
-    public function setTagsAttribute($value)
+    // primary key
+    protected $primaryKey = 'wall_id';
+
+    public function allTags()
     {
-        $array = [];
-        foreach ($value as $tag) {
-            $array[] = strtolower($tag);
-        }
-        $this->attributes['tags'] = json_encode($array);
-    }
-    // gettagsAttribute
-    public function getTagsAttribute($value)
-    {
-        return json_decode($value);
+        return $this->belongsToMany('App\Models\AllTag', 'all_wall_tags', 'wall_id', 'all_tag_id');
     }
 
     // setUrlsAttribute
@@ -38,6 +31,20 @@ class Wall extends Model
         return json_decode($value);
     }
 
+    /* // settagsAttribute
+    public function setTagsAttribute($value)
+    {
+        $array = [];
+        foreach ($value as $tag) {
+            $array[] = strtolower($tag);
+        }
+        $this->attributes['tags'] = json_encode($array);
+    }
+    // gettagsAttribute
+    public function getTagsAttribute($value)
+    {
+        return json_decode($value);
+    }
     // setCategoriesAttribute
     public function setCategoriesAttribute($value)
     {
@@ -53,4 +60,5 @@ class Wall extends Model
     {
         return json_decode($value);
     }
+    */
 }

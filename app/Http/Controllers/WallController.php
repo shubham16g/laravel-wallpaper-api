@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AllTag;
+use App\Models\AllWallTag;
 use App\Models\Wall;
 use Illuminate\Http\Request;
 
@@ -62,7 +64,6 @@ class WallController extends Controller
                     }
                 }
             }
-
             $walls->orderByRaw($orderByString . " else $counter end");
         }
 
@@ -89,17 +90,21 @@ class WallController extends Controller
             'source' => 'required|max:255|unique:walls',
             'color' => 'required|max:10',
 
-            'tags' => 'required|array',
-            'tags.*' => 'required|max:50',
-
             'urls' => 'required|array',
             'urls.full' => 'required|max:255',
             'urls.small' => 'required|max:255',
             'urls.raw' => 'nullable|max:255',
             'urls.regular' => 'nullable|max:255',
 
+
+            'tags' => 'required|array',
+            'tags.*' => 'required|max:50',
+
             'categories' => 'required|array',
-            'categories.*' => 'required|string|exists:categories,name',
+            'categories.*' => 'required|string|exists:all_tags,name,type,category',
+
+            'colors' => 'required|array',
+            'colors.*' => 'required|string|exists:all_tags,name,type,color',
 
             'license' => 'nullable|max:255',
             'author' => 'nullable|max:100',
@@ -108,12 +113,25 @@ class WallController extends Controller
             'coins' => 'nullable|integer',
         ]);
 
+        $allTags = [];
+
+        foreach ($data['tags'] as $tag) {
+            $allTags[] = AllTag::firstOrCreate(['name' => $tag, 'type' => 'tag'])->all_tag_id;
+        }
+
+        foreach ($data['categories'] as $category) {
+            $allTags[] = AllTag::firstOrCreate(['name' => $category, 'type' => 'category'])->all_tag_id;
+        }
+
+        foreach ($data['colors'] as $color) {
+            $allTags[] = AllTag::firstOrCreate(['name' => $color, 'type' => 'color'])->all_tag_id;
+        }
+
+
         $wall = new Wall();
         $wall->source = $data['source'];
         $wall->color = $data['color'];
-        $wall->tags = $data['tags'];
         $wall->urls = $data['urls'];
-        $wall->categories = $data['categories'];
         $wall->license = $data['license'];
         $wall->author = $data['author'];
         $wall->author_portfolio = $data['author_portfolio'];
@@ -123,8 +141,19 @@ class WallController extends Controller
         }
         $wall->save();
 
+        AllWallTag::insert(array_map(function ($tag) use ($wall) {
+            return ['wall_id' => $wall->wall_id, 'all_tag_id' => $tag];
+        }, $allTags));
+
         return response()->json(['message' => 'Wallpaper added successfully']);
     }
+
+    /* private function findInAllTags($name, $type)
+    {
+        $tag = AllTag::where('name', $name)->where('type', $type)->first();
+        if ($tag == null) return null;
+        return $tag->all_tag_id;
+    } */
 
     // delete wallpaper
     public function destroy($id)

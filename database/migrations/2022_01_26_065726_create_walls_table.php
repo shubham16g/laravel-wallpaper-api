@@ -14,11 +14,9 @@ class CreateWallsTable extends Migration
     public function up()
     {
         Schema::create('walls', function (Blueprint $table) {
-            $table->id();
+            $table->id("wall_id");
             $table->string("source", 255);
             $table->string("color", 10);
-            $table->json("tags");
-            $table->json('categories');
             $table->json('urls');
             $table->string("license", 255)->nullable();
             $table->string("author", 100)->nullable();
