@@ -15,7 +15,6 @@ class CreateWallsTable extends Migration
     {
         Schema::create('walls', function (Blueprint $table) {
             $table->id();
-            $table->string("name", 255);
             $table->string("source", 255);
             $table->string("color", 10);
             $table->json("tags");

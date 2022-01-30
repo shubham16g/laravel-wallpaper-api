@@ -57,7 +57,6 @@ POST wall/
 Content-Type: application/json
 
 {
-    "name": "Mountain Hills",
     "source": "https://images.unsplash.com/image-web-page-url",
     "color": "#0099ff",
     "tags": [

@@ -26,34 +26,28 @@ class WallController extends Controller
             $query = strtolower($request->s);
 
             $orderByString = "case
-                when name LIKE '$query%' then 1
-                when tags LIKE '\"$query%' then 2
-                when categories LIKE '%$query%' then 3
-                when name LIKE '%$query%' then 4
-                when tags LIKE '%$query%' then 5 ";
-            $counter = 6;
+                when tags LIKE '\"$query%' then 1
+                when categories LIKE '%$query%' then 2
+                when tags LIKE '%$query%' then 3 ";
+            $counter = 4;
 
             global $orderByArray;
             $orderByArray = [];
             $walls->where(function ($whereQuery) use ($query) {
 
                 global $orderByArray;
-                $whereQuery->where('name', 'like', '%' . $query . '%');
-                $whereQuery->orWhere('categories', 'like', '%' . $query . '%');
+                $whereQuery->where('categories', 'like', '%' . $query . '%');
                 $whereQuery->orWhere('tags', 'like', '%' . $query . '%');
 
                 $subQueries = explode(' ', $query, 3);
 
                 foreach ($subQueries as $q) {
-                    $whereQuery->orWhere('name', 'like', '%' . $q . '%');
                     $whereQuery->orWhere('categories', 'like', '%' . $q . '%');
                     $whereQuery->orWhere('tags', 'like', '%' . $q . '%');
                     $orderByArray[] =
                         [
-                            " when name LIKE '$q%' then ",
                             " when tags LIKE '\"$q%' then ",
                             " when categories LIKE '%$q%' then ",
-                            " when name LIKE '%$q%' then ",
                             " when tags LIKE '%$q%'  then "
                         ];
                 }
@@ -92,7 +86,6 @@ class WallController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|max:255',
             'source' => 'required|max:255|unique:walls',
             'color' => 'required|max:10',
 
@@ -116,7 +109,6 @@ class WallController extends Controller
         ]);
 
         $wall = new Wall();
-        $wall->name = $data['name'];
         $wall->source = $data['source'];
         $wall->color = $data['color'];
         $wall->tags = $data['tags'];
