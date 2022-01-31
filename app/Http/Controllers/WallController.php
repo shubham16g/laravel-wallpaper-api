@@ -158,7 +158,7 @@ class WallController extends Controller
         }
 
         $authorId = null;
-        if (isset($data['author']['user_name'])) {
+        if (isset($data['author']['user_name']) && $data['author']['user_name'] != null) {
             $authorId = $this->findOrCreateAuthor($data['author']);
         }
 
@@ -188,20 +188,20 @@ class WallController extends Controller
         return response()->json(['message' => 'Wallpaper added successfully']);
     }
 
-    private function findOrCreateAuthor($author)
+    private function findOrCreateAuthor($authorArr)
     {
-        $url = isset($author['url']) ? $author['url'] : null;
-        $image = isset($author['image']) ? $author['image'] : null;
-        $author = Author::where('user_name', $author['user_name'])->first();
+        $url = isset($authorArr['url']) ? $authorArr['url'] : null;
+        $image = isset($authorArr['image']) ? $authorArr['image'] : null;
+        $author = Author::where('user_name', $authorArr['user_name'])->first();
         if ($author == null) {
             $author = new Author();
-            $author->user_name = $author['user_name'];
-            $author->name = $author['name'];
+            $author->user_name = $authorArr['user_name'];
+            $author->name = $authorArr['name'];
             $author->url = $url;
             $author->image = $image;
             $author->save();
         } else {
-            $author->name = $author['name'];
+            $author->name = $authorArr['name'];
             if ($url != null) {
                 $author->url = $url;
             }
