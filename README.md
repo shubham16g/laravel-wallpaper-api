@@ -84,10 +84,12 @@ Content-Type: application/json
     ],
     "author": {
         "user_name": "@mogli",
-        "name": "Mogli Nath Anna",
-        "url": "https://images.unsplash.com/@mogli-nath-anna-OPTIONAL",
+        "name": "Mogli",
+        "url": "https://images.unsplash.com/@mogli-OPTIONAL",
         "image": "https://images.unsplash.com/mogli-image-OPTIONAL"
     },
+    "rotation": 90,
+    "flip": v,
     "license": "CC0-OPTIONAL"
 }
 

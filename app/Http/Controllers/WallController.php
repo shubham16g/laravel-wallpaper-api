@@ -131,9 +131,12 @@ class WallController extends Controller
 
             'license' => 'nullable|max:255',
 
+            'rotation' => 'nullable|integer|min:0|max:360',
+            'flip' => 'nullable|in:h,v,hv',
+
             'author' => 'nullable|array',
-            'author.user_name' => 'required_with:author|max:255',
-            'author.name' => 'required_with:author|max:255',
+            'author.user_name' => 'required_with:author|max:100',
+            'author.name' => 'required_with:author|max:100',
             'author.url' => 'nullable|max:255|url',
             'author.image' => 'nullable|max:255',
 
@@ -163,10 +166,18 @@ class WallController extends Controller
         $wall->source = $data['source'];
         $wall->color = $data['color'];
         $wall->urls = $data['urls'];
-        $wall->license = $data['license'];
+        if (isset($data['license']) && $data['license'] != null && strlen($data['license']) > 0) {
+            $wall->license = $data['license'];
+        }
         $wall->author_id = $authorId;
-        if (isset($data['coins'])) {
+        if (isset($data['coins']) && $data['coins'] != null) {
             $wall->coins = $data['coins'];
+        }
+        if (isset($data['rotation']) && $data['rotation'] != null) {
+            $wall->rotation = $data['rotation'];
+        }
+        if (isset($data['flip']) && $data['flip'] != null) {
+            $wall->flip = $data['flip'];
         }
         $wall->save();
 

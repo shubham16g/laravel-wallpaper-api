@@ -21,6 +21,8 @@ class CreateWallsTable extends Migration
             $table->string("license", 255)->nullable();
             $table->unsignedBigInteger('author_id')->nullable();
             $table->foreign('author_id')->references('author_id')->on('authors');
+            $table->integer("rotation")->default(0);
+            $table->enum('flip', ['h', 'v', 'hv'])->nullable();
             $table->integer("downloads")->default(0);
             $table->integer("coins")->default(0);
             $table->timestamps();
