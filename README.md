@@ -82,10 +82,13 @@ Content-Type: application/json
         "valley",
         "peak"
     ],
-    "license": "CC0-OPTIONAL",
-    "author": "Mogli Nath Anna-OPTIONAL",
-    "author_portfolio": "https://images.unsplash.com/@mogli-nath-anna-OPTIONAL",
-    "author_image": "https://images.unsplash.com/mogli-image-OPTIONAL",
+    "author": {
+        "user_name": "@mogli",
+        "name": "Mogli Nath Anna",
+        "url": "https://images.unsplash.com/@mogli-nath-anna-OPTIONAL",
+        "image": "https://images.unsplash.com/mogli-image-OPTIONAL"
+    },
+    "license": "CC0-OPTIONAL"
 }
 
 ```

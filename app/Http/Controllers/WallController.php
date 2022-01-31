@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AllTag;
 use App\Models\AllWallTag;
+use App\Models\Author;
 use App\Models\Wall;
 use Illuminate\Http\Request;
 
@@ -24,7 +25,7 @@ class WallController extends Controller
             'order_by' => 'nullable|in:downloads,newest',
         ]);
 
-        $walls = Wall::with('allTags');
+        $walls = Wall::with('allTags')->with('author');
 
         if ($category != null && strlen($category) > 2) {
 
@@ -70,7 +71,6 @@ class WallController extends Controller
                 }
                 $walls->orderByRaw("case " . $orderByString . " else $counter end");
             }
-
         }
 
         if ($request->order_by == 'downloads') {
@@ -80,7 +80,8 @@ class WallController extends Controller
         return $this->filter(((object)$walls->paginate())->toArray());
     }
 
-    private function filter(array $response) {
+    private function filter(array $response)
+    {
         foreach ($response['data'] as $key => $wall) {
             $response['data'][$key]['colors'] = [];
             $response['data'][$key]['tags'] = [];
@@ -129,35 +130,41 @@ class WallController extends Controller
             'colors.*' => 'required|string|exists:all_tags,name,type,color',
 
             'license' => 'nullable|max:255',
-            'author' => 'nullable|max:100',
-            'author_portfolio' => 'nullable|max:255',
-            'author_image' => 'nullable|max:255',
+
+            'author' => 'nullable|array',
+            'author.user_name' => 'required_with:author|max:255',
+            'author.name' => 'required_with:author|max:255',
+            'author.url' => 'nullable|max:255|url',
+            'author.image' => 'nullable|max:255',
+
             'coins' => 'nullable|integer',
         ]);
 
         $allTags = [];
 
-        foreach ($data['tags'] as $tag) {
-            $allTags[] = AllTag::firstOrCreate(['name' => $tag, 'type' => 'tag'])->all_tag_id;
-        }
-
         foreach ($data['categories'] as $category) {
-            $allTags[] = AllTag::firstOrCreate(['name' => $category, 'type' => 'category'])->all_tag_id;
+            $allTags[AllTag::firstOrCreate(['name' => $category, 'type' => 'category'])->all_tag_id] = true;
         }
 
         foreach ($data['colors'] as $color) {
-            $allTags[] = AllTag::firstOrCreate(['name' => $color, 'type' => 'color'])->all_tag_id;
+            $allTags[AllTag::firstOrCreate(['name' => $color, 'type' => 'color'])->all_tag_id] = true;
         }
 
+        foreach ($data['tags'] as $tag) {
+            $allTags[$this->findOrCreate($tag, 'tag')] = true;
+        }
+
+        $authorId = null;
+        if (isset($data['author']['user_name'])) {
+            $authorId = $this->findOrCreateAuthor($data['author']);
+        }
 
         $wall = new Wall();
         $wall->source = $data['source'];
         $wall->color = $data['color'];
         $wall->urls = $data['urls'];
         $wall->license = $data['license'];
-        $wall->author = $data['author'];
-        $wall->author_portfolio = $data['author_portfolio'];
-        $wall->author_image = $data['author_image'];
+        $wall->author_id = $authorId;
         if (isset($data['coins'])) {
             $wall->coins = $data['coins'];
         }
@@ -165,9 +172,50 @@ class WallController extends Controller
 
         AllWallTag::insert(array_map(function ($tag) use ($wall) {
             return ['wall_id' => $wall->wall_id, 'all_tag_id' => $tag];
-        }, $allTags));
+        }, array_keys($allTags)));
 
         return response()->json(['message' => 'Wallpaper added successfully']);
+    }
+
+    private function findOrCreateAuthor($author)
+    {
+        $url = isset($author['url']) ? $author['url'] : null;
+        $image = isset($author['image']) ? $author['image'] : null;
+        $author = Author::where('user_name', $author['user_name'])->first();
+        if ($author == null) {
+            $author = new Author();
+            $author->user_name = $author['user_name'];
+            $author->name = $author['name'];
+            $author->url = $url;
+            $author->image = $image;
+            $author->save();
+        } else {
+            $author->name = $author['name'];
+            if ($url != null) {
+                $author->url = $url;
+            }
+            if ($image != null) {
+                $author->image = $image;
+            }
+            $author->save();
+        }
+        return $author->author_id;
+    }
+
+    private function findOrCreate($name, $type = null)
+    {
+        $allTag = AllTag::where('name', '=', $name)->first();
+        if ($allTag == null) {
+            if ($type != null) {
+                $newAllTag = new AllTag();
+                $newAllTag->name = $name;
+                $newAllTag->type = $type;
+                $newAllTag->save();
+                return $newAllTag->all_tag_id;
+            }
+            return null;
+        }
+        return $allTag->all_tag_id;
     }
 
     // delete wallpaper

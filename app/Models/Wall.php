@@ -14,9 +14,17 @@ class Wall extends Model
     // primary key
     protected $primaryKey = 'wall_id';
 
+    // hidden author_id
+    protected $hidden = ['author_id'];
+
     public function allTags()
     {
         return $this->belongsToMany('App\Models\AllTag', 'all_wall_tags', 'wall_id', 'all_tag_id');
+    }
+
+    public function author()
+    {
+        return $this->hasOne(Author::class, 'author_id', 'author_id');
     }
 
     // setUrlsAttribute
