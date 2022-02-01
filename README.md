@@ -111,6 +111,7 @@ POST add/color
 Content-Type: application/json
 
 {
-    "name": "Blue"
+    "name": "Blue",
+    "value": "#0099ff"
 }
 ```

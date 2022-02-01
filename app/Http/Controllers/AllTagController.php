@@ -14,7 +14,12 @@ class AllTagController extends Controller
         $request->validate([
             'type' => 'required|string|max:100|in:category,color',
         ]);
-        $categories = AllTag::where('type', $type)->get(['name','value', 'popularity'])->sortByDesc('popularity')->toArray();
+        $columns = ['name', 'popularity'];
+        if ($request->type == 'color') {
+            $columns[] = 'value';
+        }
+
+        $categories = AllTag::where('type', $type)->orderBy('popularity')->orderBy('name')->get($columns);
         return $categories;
     }
 
