@@ -248,4 +248,21 @@ class WallController extends Controller
         }
         return response()->json(['message' => 'No Wallpaper found with given id'], 404);
     }
+
+    public function validateList(Request $request)
+    {
+        $request->validate([
+            'sources' => 'required|array',
+            'sources.*' => 'required|max:255|string|url',
+        ]);
+
+        // check soureces in wallmodel
+        $sources = $request->sources;
+        $responseArr = [];
+        foreach ($sources as $source) {
+            $wall = Wall::where('source', $source)->first();
+            $responseArr[] = $wall != null;
+        }
+        return response()->json($responseArr);
+    }
 }

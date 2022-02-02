@@ -19,6 +19,7 @@ Route::get('/list/{type}', [AllTagController::class, 'index']);
 Route::prefix('/wall')->group(function () {
     Route::get('/', [WallController::class, 'index']);
     Route::post('/', [WallController::class, 'store']);
+    Route::post('/validate', [WallController::class, 'validateList']);
     Route::delete('/{id}', [WallController::class, 'destroy']);
     Route::get('/download/{id}', [WallController::class, 'download']);
 });
