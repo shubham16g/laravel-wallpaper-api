@@ -27,24 +27,10 @@ class WallController extends Controller
 
         $walls = Wall::with('allTags')->with('author')->leftJoin('all_wall_tags', 'all_wall_tags.wall_id', '=', 'walls.wall_id')
             ->join('all_tags', 'all_tags.all_tag_id', '=', 'all_wall_tags.all_tag_id')
-            ->select(DB::raw('COUNT(all_wall_tags.all_tag_id) as match_count'), 'walls.*')
+            ->select('walls.*')
             ->groupBy('all_wall_tags.wall_id')
-            ->orderBy('match_count', 'desc')
-            // ->where('all_tags.name', 'LIKE',"%$sub%")
-            // ->orWhere('all_tags.name', 'LIKE',"%$sub2%")
-            // ->groupBy('all_wall_tags.wall_id')
-            // ->orderBy('match_count', 'desc')
-        ;
+            ->orderBy(DB::raw('COUNT(all_wall_tags.all_tag_id)'), 'desc');
 
-
-
-
-        // return $walls->get();
-
-
-        // $walls = Wall::with(['allTags' => function ($query) {
-        //     $query->orderBy('name');
-        // }])->with('author');
 
         if ($category != null && strlen($category) > 2) {
 
@@ -97,19 +83,23 @@ class WallController extends Controller
     private function filter(array $response)
     {
         foreach ($response['data'] as $key => $wall) {
-            $response['data'][$key]['colors'] = [];
-            $response['data'][$key]['tags'] = [];
-            $response['data'][$key]['categories'] = [];
-            foreach ($wall['all_tags'] as $tag) {
-                if ($tag['type'] == 'category') {
-                    $response['data'][$key]['categories'][] = $tag['name'];
-                } elseif ($tag['type'] == 'color') {
-                    $response['data'][$key]['colors'][] = $tag['name'];
-                } else {
-                    $response['data'][$key]['tags'][] = $tag['name'];
+            if (isset($wall['all_tags'])) {
+
+                $response['data'][$key]['colors'] = [];
+                $response['data'][$key]['tags'] = [];
+                $response['data'][$key]['categories'] = [];
+
+                foreach ($wall['all_tags'] as $tag) {
+                    if ($tag['type'] == 'category') {
+                        $response['data'][$key]['categories'][] = $tag['name'];
+                    } elseif ($tag['type'] == 'color') {
+                        $response['data'][$key]['colors'][] = $tag['name'];
+                    } else {
+                        $response['data'][$key]['tags'][] = $tag['name'];
+                    }
                 }
+                unset($response['data'][$key]['all_tags']);
             }
-            unset($response['data'][$key]['all_tags']);
         }
         unset($response['links']);
         unset($response['first_page_url']);
