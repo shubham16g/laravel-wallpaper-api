@@ -28,8 +28,11 @@ class WallController extends Controller
         $walls = Wall::with('allTags')->with('author')->leftJoin('all_wall_tags', 'all_wall_tags.wall_id', '=', 'walls.wall_id')
             ->join('all_tags', 'all_tags.all_tag_id', '=', 'all_wall_tags.all_tag_id')
             ->select('walls.*')
-            ->groupBy('all_wall_tags.wall_id')
-            ->orderBy(DB::raw('COUNT(all_wall_tags.all_tag_id)'), 'desc');
+            ->groupBy('all_wall_tags.wall_id');
+
+        if ($category != null || $s != null || $color != null) {
+            $walls->orderBy(DB::raw('COUNT(all_wall_tags.all_tag_id)'), 'desc');
+        }
 
 
         if ($category != null && strlen($category) > 2) {
