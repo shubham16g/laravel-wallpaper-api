@@ -42,23 +42,33 @@ class WallController extends Controller
         if ($s != null && strlen($s) > 0) {
             global $orderByArray;
             $orderByArray = [];
-            $walls->whereHas('allTags', function ($query) use ($s) {
-                $subQueries = explode(' ', $s, 5);
-                for ($i = 0; $i < count($subQueries); $i++) {
+            $subQueries = explode(' ', $s, 5);
+
+            $walls->whereHas('allTags', function ($query) use ($subQueries) {
+                $countOfSubQueries = count($subQueries);
+                for ($i = 0; $i < $countOfSubQueries; $i++) {
                     $sq = $subQueries[$i];
                     if ($i == 0) {
                         $query->where('name', 'like', "%$sq%");
                     } else {
                         $query->orWhere('name', 'like', "%$sq%");
                     }
-                    $orderByArray[] =
-                        [
-                            " when tags LIKE '$sq'  then ",
-                            " when tags LIKE '$sq%'  then ",
-                            " when tags LIKE '%$sq%'  then "
-                        ];
+                    $order_cases = [];
+                    if ($i < $countOfSubQueries - 1) {
+                        $nextSq = $subQueries[$i + 1];
+                        $order_cases[] = " when tags LIKE '%$sq%' AND tags LIKE '%$nextSq%' then ";
+                    }
+                    $order_cases[] = " when tags LIKE '$sq'  then ";
+                    $order_cases[] = " when tags LIKE '$sq%'  then ";
+                    $order_cases[] = " when tags LIKE '%$sq%'  then ";
+
+                    $orderByArray[] = $order_cases;
                 }
             });
+            // increment two loop in subQueries
+
+
+
             if (!isEmpty($orderByArray)) {
 
                 $orderByArr = array_map(null, ...$orderByArray);
@@ -72,6 +82,8 @@ class WallController extends Controller
                 $walls->orderByRaw("case " . $orderByString . " else $counter end");
             }
         }
+
+
 
         if ($request->order_by == 'downloads') {
             $walls->orderBy('downloads', "DESC");

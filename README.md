@@ -93,6 +93,20 @@ Content-Type: application/json
     "license": "CC0-OPTIONAL"
 }
 
+POST wall/validate
+Content-Type: application/json
+{
+    "sources": [
+        "https://images.unsplash.com/image-web-page-url",
+        "https://images.unsplash.com/image-web-page-url2"
+    ]
+}
+
+Response:
+[
+    true,
+    false
+]
 ```
 
 ### For Categories and Colors:
