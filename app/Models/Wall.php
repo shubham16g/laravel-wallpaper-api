@@ -9,7 +9,7 @@ class Wall extends Model
 {
     use HasFactory;
 
-    protected $perPage = 16;
+    protected $perPage = 18;
 
     // primary key
     protected $primaryKey = 'wall_id';
