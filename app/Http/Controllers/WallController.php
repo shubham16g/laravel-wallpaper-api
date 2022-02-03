@@ -7,8 +7,8 @@ use App\Models\AllWallTag;
 use App\Models\Author;
 use App\Models\Wall;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-use function PHPUnit\Framework\isEmpty;
 
 class WallController extends Controller
 {
@@ -25,56 +25,58 @@ class WallController extends Controller
             'order_by' => 'nullable|in:downloads,newest',
         ]);
 
-        $walls = Wall::with('allTags')->with('author');
+        $walls = Wall::with('allTags')->with('author')->leftJoin('all_wall_tags', 'all_wall_tags.wall_id', '=', 'walls.wall_id')
+            ->join('all_tags', 'all_tags.all_tag_id', '=', 'all_wall_tags.all_tag_id')
+            ->select(DB::raw('COUNT(all_wall_tags.all_tag_id) as match_count'), 'walls.*')
+            ->groupBy('all_wall_tags.wall_id')
+            ->orderBy('match_count', 'desc')
+            // ->where('all_tags.name', 'LIKE',"%$sub%")
+            // ->orWhere('all_tags.name', 'LIKE',"%$sub2%")
+            // ->groupBy('all_wall_tags.wall_id')
+            // ->orderBy('match_count', 'desc')
+        ;
+
+
+
+
+        // return $walls->get();
+
+
+        // $walls = Wall::with(['allTags' => function ($query) {
+        //     $query->orderBy('name');
+        // }])->with('author');
 
         if ($category != null && strlen($category) > 2) {
 
-            $walls->whereHas('allTags', function ($query) use ($category) {
-                $query->where('name', '=', $category)->where('type', '=', "category");
+            $walls->orWhere(function ($query) use ($category) {
+                $query->where('all_tags.name', '=', "$category")->where('all_tags.type', '=', "category");
             });
         }
         if ($color != null && strlen($color) > 2) {
-            $walls->whereHas('allTags', function ($query) use ($color) {
-                $query->where('name', '=', $color)->where('type', '=', "color");
+
+            $walls->orWhere(function ($query) use ($color) {
+                $query->where('all_tags.name', '=', "$color")->where('all_tags.type', '=', "color");
             });
         }
 
         if ($s != null && strlen($s) > 0) {
-            global $orderByArray;
             $orderByArray = [];
             $subQueries = explode(' ', $s, 5);
 
-            $walls->whereHas('allTags', function ($query) use ($subQueries) {
-                $countOfSubQueries = count($subQueries);
-                for ($i = 0; $i < $countOfSubQueries; $i++) {
-                    $sq = $subQueries[$i];
-                    if ($i == 0) {
-                        $query->where('name', 'like', "%$sq%");
-                    } else {
-                        $query->orWhere('name', 'like', "%$sq%");
-                    }
-                    $order_cases = [];
-                    if ($i < $countOfSubQueries - 1) {
-                        $nextSq = $subQueries[$i + 1];
-                        $order_cases[] = " when tags LIKE '%$sq%' AND tags LIKE '%$nextSq%' then ";
-                    }
-                    $order_cases[] = " when tags LIKE '$sq'  then ";
-                    $order_cases[] = " when tags LIKE '$sq%'  then ";
-                    $order_cases[] = " when tags LIKE '%$sq%'  then ";
+            for ($i = 0; $i < count($subQueries); $i++) {
+                $sq = $subQueries[$i];
+                $walls->orWhere('all_tags.name', 'like', "%$sq%");
+                $orderByArray[0][] = " when all_tags.name LIKE '$sq'  then ";
+                $orderByArray[1][] = " when all_tags.name LIKE '$sq%'  then ";
+                $orderByArray[2][] = " when all_tags.name LIKE '%$sq%'  then ";
+            }
 
-                    $orderByArray[] = $order_cases;
-                }
-            });
-            // increment two loop in subQueries
+            // check if orderByArray is not empty
+            if (sizeof($orderByArray) > 0) {
 
-
-
-            if (!isEmpty($orderByArray)) {
-
-                $orderByArr = array_map(null, ...$orderByArray);
                 $orderByString = '';
                 $counter = 1;
-                foreach ($orderByArr as $value) {
+                foreach ($orderByArray as $value) {
                     foreach ($value as $str) {
                         $orderByString .= $str . ' ' . $counter++;
                     }
