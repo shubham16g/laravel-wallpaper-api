@@ -14,6 +14,7 @@ class WallController extends Controller
 {
 
 
+    
     public function index(Request $request)
     {
 
