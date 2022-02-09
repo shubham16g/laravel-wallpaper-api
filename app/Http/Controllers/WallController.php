@@ -19,6 +19,7 @@ class WallController extends Controller
 
         $color = $request->color;
         $category = $request->category;
+        $perPage = $request->per_page;
         $s = $request->s;
 
         $request->validate([
@@ -80,7 +81,10 @@ class WallController extends Controller
             $walls->orderBy('downloads', "DESC");
         }
         $walls->orderBy('created_at', "DESC");
-        return $this->filter(((object)$walls->paginate())->toArray());
+        if ($perPage != null) {
+            $perPage = 16;
+        }
+        return $this->filter(((object)$walls->paginate($perPage))->toArray());
     }
 
     private function filter(array $response)
