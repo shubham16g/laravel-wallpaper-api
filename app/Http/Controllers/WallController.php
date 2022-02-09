@@ -14,7 +14,7 @@ class WallController extends Controller
 {
 
 
-    
+
     public function index(Request $request)
     {
 
@@ -82,8 +82,8 @@ class WallController extends Controller
             $walls->orderBy('downloads', "DESC");
         }
         $walls->orderBy('created_at', "DESC");
-        if ($perPage != null) {
-            $perPage = 16;
+        if ($perPage == null) {
+            $perPage = 18;
         }
         return $this->filter(((object)$walls->paginate($perPage))->toArray());
     }
