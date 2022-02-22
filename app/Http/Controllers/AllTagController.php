@@ -8,6 +8,14 @@ use Illuminate\Http\Request;
 class AllTagController extends Controller
 {
 
+    public function init(Request $request)
+    {
+        return [
+            'colors'=> $this->index($request, 'color'),
+            'category'=> $this->index($request, 'category'),
+        ];
+    }
+
     public function index(Request $request, $type)
     {
         $request->merge(['type' => $type]);

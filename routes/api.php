@@ -14,6 +14,7 @@ Route::post('/add/{type}', [AllTagController::class, 'store']);
 
 
 Route::get('/list/{type}', [AllTagController::class, 'index']);
+Route::get('/init', [AllTagController::class, 'init']);
 
 // route postfix group
 Route::prefix('/wall')->group(function () {
