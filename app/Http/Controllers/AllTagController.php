@@ -12,7 +12,7 @@ class AllTagController extends Controller
     {
         return [
             'colors'=> $this->index($request, 'color'),
-            'category'=> $this->index($request, 'category'),
+            'categories'=> $this->index($request, 'category'),
         ];
     }
 
