@@ -143,7 +143,8 @@ POST add/category
 Content-Type: application/json
 
 {
-    "name": "Nature"
+    "name": "Nature",
+    "image": "https://images.unsplash.com/photo-low-quality-url"
 }
 
 POST add/color

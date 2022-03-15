@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AllTag;
+use App\Models\Wall;
 use Illuminate\Http\Request;
 
 class AllTagController extends Controller
@@ -22,12 +23,14 @@ class AllTagController extends Controller
         $request->validate([
             'type' => 'required|string|max:100|in:category,color',
         ]);
-        $columns = ['name', 'popularity'];
-        if ($request->type == 'color') {
-            $columns[] = 'value';
-        }
+        $columns = ['name', 'popularity', 'value'];
 
         $categories = AllTag::where('type', $type)->orderBy('popularity')->orderBy('name')->get($columns);
+        foreach ($categories as $category) {
+            $category->image = $category->value;
+            unset($category->value);
+        }
+
         return $categories;
     }
 
@@ -38,6 +41,7 @@ class AllTagController extends Controller
             'name' => 'required|string|max:100|unique:all_tags,name',
             'type' => 'required|string|max:100|in:category,color',
             'value' => 'required_if:type,color|string|regex:/^#[0-9a-fA-F]{6}$/',
+            'image' => 'required_if:type,category|string|max:255',
             // validate color hex code
 
         ]);
@@ -46,6 +50,8 @@ class AllTagController extends Controller
         $category->name = $request->name;
         if ($request->type == 'color') {
             $category->value = $request->value;
+        } else if ($request->type == 'category') {
+            $category->value = $request->image;
         }
         $category->type = $type;
         $category->save();
