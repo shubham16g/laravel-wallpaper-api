@@ -5,22 +5,16 @@ use App\Http\Controllers\WallController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('api.user')->group(function () {
+    Route::get('/list/{type}', [AllTagController::class, 'index']);
+    Route::get('/init', [AllTagController::class, 'init']);
+    Route::get('/wall/', [WallController::class, 'index']);
+    Route::get('/wall/download/{id}', [WallController::class, 'download']);
 });
 
-Route::post('/add/{type}', [AllTagController::class, 'store']);
-
-
-Route::get('/list/{type}', [AllTagController::class, 'index']);
-Route::get('/init', [AllTagController::class, 'init']);
-
-// route postfix group
-Route::prefix('/wall')->group(function () {
-    Route::get('/', [WallController::class, 'index']);
-    Route::post('/', [WallController::class, 'store']);
-    Route::post('/validate', [WallController::class, 'validateList']);
-    Route::delete('/{id}', [WallController::class, 'destroy']);
-    Route::get('/download/{id}', [WallController::class, 'download']);
+Route::middleware('api.admin')->group(function () {
+    Route::post('/add/{type}', [AllTagController::class, 'store']);
+    Route::post('/wall/', [WallController::class, 'store']);
+    Route::post('/wall/validate', [WallController::class, 'validateList']);
+    Route::delete('/wall/{id}', [WallController::class, 'destroy']);
 });

@@ -41,6 +41,8 @@ Authorization: Bearer <YOUR_API_KEY or YOUR_ADMIN_KEY>
 ```
 NOTE: In Authorization header, pass either `YOUR_API_KEY` or `YOUR_ADMIN_KEY`. With `YOUR_API_KEY`, you can only send GET requests but with `YOUR_ADMIN_KEY`, you can access all the Requests i.e. GET, POST, DELETE, etc. It is recommanded to put only `YOUR_API_KEY` in your user's App.
 
+
+## User Routes:
 ### For Wallpapers:
 ```
 GET wall/
@@ -52,8 +54,20 @@ GET wall/?color=red
 GET wall/?order_by=downloads
 GET wall/?order_by=newest
 
-
 GET wall/download/{id}
+```
+
+### For Categories and Colors:
+```
+GET list/category
+GET list/color
+GET init
+```
+## Admin Routes:
+
+### For Wallpapers:
+
+```
 DELETE wall/{id}
 
 POST wall/
@@ -111,9 +125,6 @@ Response:
 
 ### For Categories and Colors:
 ```
-GET list/category
-GET list/color
-
 POST add/category
 Content-Type: application/json
 

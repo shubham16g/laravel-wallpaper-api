@@ -21,9 +21,7 @@ class ApiKeyMiddleware
         if ($key == null) {
             throw new AuthenticationException('API key is missing');
         }
-        if (!$request->isMethod('get') && $key !== config('app.admin_key')) {
-            throw new AuthenticationException('Invalid Admin key');
-        } elseif ($key !== config('app.admin_key') && $key !== config('app.api_key')) {
+        if ($key !== config('app.admin_key') && $key !== config('app.api_key')) {
             throw new AuthenticationException('Invalid API key');
         }
         return $next($request);
