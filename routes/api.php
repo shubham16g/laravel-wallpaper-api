@@ -10,6 +10,7 @@ Route::middleware('api.user')->group(function () {
     Route::get('/init', [AllTagController::class, 'init']);
     Route::get('/wall/', [WallController::class, 'index']);
     Route::get('/wall/download/{id}', [WallController::class, 'download']);
+    Route::post('/wall/list/', [WallController::class, 'list']);
 });
 
 Route::middleware('api.admin')->group(function () {

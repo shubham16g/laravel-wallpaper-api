@@ -118,6 +118,21 @@ class WallController extends Controller
         return $response;
     }
 
+    public function list(Request $request){
+        $request->validate([
+            'list' => 'required|array',
+            'list.*' => 'required|integer|exists:walls,wall_id',
+        ]);
+
+        $walls = Wall::with('allTags')->with('author')->leftJoin('all_wall_tags', 'all_wall_tags.wall_id', '=', 'walls.wall_id')
+            ->join('all_tags', 'all_tags.all_tag_id', '=', 'all_wall_tags.all_tag_id')
+            ->select('walls.*')
+            ->groupBy('all_wall_tags.wall_id');
+        $walls->orderBy(DB::raw('COUNT(all_wall_tags.all_tag_id)'), 'desc');
+        $walls->whereIn('walls.wall_id', $request->list);
+        return $this->filter(((object)$walls->paginate(18))->toArray());
+    }
+
 
     public function store(Request $request)
     {

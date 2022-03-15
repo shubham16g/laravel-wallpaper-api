@@ -55,6 +55,20 @@ GET wall/?order_by=downloads
 GET wall/?order_by=newest
 
 GET wall/download/{id}
+
+POST wall/list/
+Content-Type: application/json
+
+{
+	"list": [
+		23,
+        24,
+        33,
+        142,
+        45,
+        60
+	]
+}
 ```
 
 ### For Categories and Colors:
