@@ -121,7 +121,7 @@ class WallController extends Controller
     public function list(Request $request){
         $request->validate([
             'list' => 'required|array',
-            'list.*' => 'required|integer|exists:walls,wall_id',
+            'list.*' => 'required|integer',
         ]);
 
         $walls = Wall::with('allTags')->with('author')->leftJoin('all_wall_tags', 'all_wall_tags.wall_id', '=', 'walls.wall_id')
