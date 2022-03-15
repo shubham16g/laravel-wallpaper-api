@@ -12,8 +12,8 @@ class AllTagController extends Controller
     public function init(Request $request)
     {
         return [
-            'colors'=> $this->index($request, 'color'),
-            'categories'=> $this->index($request, 'category'),
+            'colors' => $this->index($request, 'color'),
+            'categories' => $this->index($request, 'category'),
         ];
     }
 
@@ -26,9 +26,11 @@ class AllTagController extends Controller
         $columns = ['name', 'popularity', 'value'];
 
         $categories = AllTag::where('type', $type)->orderBy('popularity')->orderBy('name')->get($columns);
-        foreach ($categories as $category) {
-            $category->image = $category->value;
-            unset($category->value);
+        if ($request->type == 'category') {
+            foreach ($categories as $category) {
+                $category->image = $category->value;
+                unset($category->value);
+            }
         }
 
         return $categories;
@@ -57,5 +59,4 @@ class AllTagController extends Controller
         $category->save();
         return $category;
     }
-
 }
