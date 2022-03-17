@@ -40,7 +40,7 @@ class AllTagController extends Controller
     {
         $request->merge(['type' => $type]);
         $request->validate([
-            'name' => 'required|string|max:100|unique:all_tags,name',
+            'name' => 'required|string|max:100',
             'type' => 'required|string|max:100|in:category,color',
             'value' => 'required_if:type,color|string|regex:/^#[0-9a-fA-F]{6}$/',
             'image' => 'required_if:type,category|string|max:255',
@@ -48,7 +48,10 @@ class AllTagController extends Controller
 
         ]);
 
-        $category = new AllTag();
+        $category = AllTag::where('name', $request->name)->first();
+        if ($category == null) {
+            $category = new AllTag();
+        }
         $category->name = $request->name;
         if ($request->type == 'color') {
             $category->value = $request->value;
