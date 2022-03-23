@@ -39,7 +39,7 @@ http://127.0.0.1:8000/api/
 Accept: application/json
 Authorization: Bearer <YOUR_API_KEY or YOUR_ADMIN_KEY>
 ```
-NOTE: In Authorization header, pass either `YOUR_API_KEY` or `YOUR_ADMIN_KEY`. With `YOUR_API_KEY`, you can only send GET requests but with `YOUR_ADMIN_KEY`, you can access all the Requests i.e. GET, POST, DELETE, etc. It is recommanded to put only `YOUR_API_KEY` in your user's App.
+NOTE: In Authorization header, pass either `YOUR_API_KEY` or `YOUR_ADMIN_KEY`. With `YOUR_API_KEY`, you can only access to Users Endpoints but with `YOUR_ADMIN_KEY`, you can access all the Requests, Admin and User Endpoints. It is recommanded to put only `YOUR_API_KEY` in your user's App.
 
 
 ## User Routes:
@@ -62,11 +62,11 @@ Content-Type: application/json
 {
 	"list": [
 		23,
-        24,
-        33,
-        142,
-        45,
-        60
+		24,
+		33,
+		142,
+		45,
+		60
 	]
 }
 ```

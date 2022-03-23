@@ -13,8 +13,6 @@ use Illuminate\Support\Facades\DB;
 class WallController extends Controller
 {
 
-
-
     public function index(Request $request)
     {
 
