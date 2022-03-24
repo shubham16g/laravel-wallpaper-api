@@ -267,8 +267,9 @@ class WallController extends Controller
 
     public function download($id)
     {
-        $wall = Wall::where('id', $id)->increment('downloads');
-        if ($wall) {
+        $wall = Wall::find($id);
+        if ($wall != null) {
+            $wall->increment('downloads');
             return response()->json(['message' => 'Wallpaper downloaded successfully']);
         }
         return response()->json(['message' => 'No Wallpaper found with given id'], 404);
