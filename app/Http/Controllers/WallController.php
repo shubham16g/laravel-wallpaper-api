@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AllTag;
 use App\Models\AllWallTag;
 use App\Models\Author;
+use App\Models\Featured;
 use App\Models\Wall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -83,30 +84,12 @@ class WallController extends Controller
         if ($perPage == null) {
             $perPage = 18;
         }
-        return $this->filter(((object)$walls->paginate($perPage))->toArray());
+        return $this->filterPagination(((object)$walls->paginate($perPage))->toArray());
     }
 
-    private function filter(array $response)
+    private function filterPagination(array $response)
     {
-        foreach ($response['data'] as $key => $wall) {
-            if (isset($wall['all_tags'])) {
-
-                $response['data'][$key]['colors'] = [];
-                $response['data'][$key]['tags'] = [];
-                $response['data'][$key]['categories'] = [];
-
-                foreach ($wall['all_tags'] as $tag) {
-                    if ($tag['type'] == 'category') {
-                        $response['data'][$key]['categories'][] = $tag['name'];
-                    } elseif ($tag['type'] == 'color') {
-                        $response['data'][$key]['colors'][] = $tag['name'];
-                    } else {
-                        $response['data'][$key]['tags'][] = $tag['name'];
-                    }
-                }
-                unset($response['data'][$key]['all_tags']);
-            }
-        }
+        $this->filterWallList($response['data']);
         unset($response['links']);
         unset($response['first_page_url']);
         unset($response['last_page_url']);
@@ -114,6 +97,28 @@ class WallController extends Controller
         unset($response['prev_page_url']);
         unset($response['path']);
         return $response;
+    }
+
+    private function filterWallList(array &$data){
+        foreach ($data as $key => $wall) {
+            if (isset($wall['all_tags'])) {
+
+                $data[$key]['colors'] = [];
+                $data[$key]['tags'] = [];
+                $data[$key]['categories'] = [];
+
+                foreach ($wall['all_tags'] as $tag) {
+                    if ($tag['type'] == 'category') {
+                        $data[$key]['categories'][] = $tag['name'];
+                    } elseif ($tag['type'] == 'color') {
+                        $data[$key]['colors'][] = $tag['name'];
+                    } else {
+                        $data[$key]['tags'][] = $tag['name'];
+                    }
+                }
+                unset($data[$key]['all_tags']);
+            }
+        }
     }
 
     public function list(Request $request){
@@ -128,7 +133,28 @@ class WallController extends Controller
             ->groupBy('all_wall_tags.wall_id');
         $walls->orderBy(DB::raw('COUNT(all_wall_tags.all_tag_id)'), 'desc');
         $walls->whereIn('walls.wall_id', $request->list);
-        return $this->filter(((object)$walls->paginate(18))->toArray());
+        return $this->filterPagination(((object)$walls->paginate(18))->toArray());
+    }
+
+    public function featured()
+    {
+        // return Featured::select('wall_id')->get();
+        $featured = Featured::all();
+        $walls = Wall::with('allTags')->with('author')->leftJoin('all_wall_tags', 'all_wall_tags.wall_id', '=', 'walls.wall_id')
+        ->join('all_tags', 'all_tags.all_tag_id', '=', 'all_wall_tags.all_tag_id')
+        ->select('walls.*')
+        ->groupBy('all_wall_tags.wall_id');
+        $walls->whereIn('walls.wall_id', array_map(function ($item) {
+            return $item['wall_id'];
+        }, $featured->toArray()));
+        $data = $walls->get()->toArray();
+        $this->filterWallList($data);
+        return [
+            'data' => $data,
+            'titles' => array_map(function ($item) {
+                return $item['title'];
+            }, $featured->toArray())
+        ];
     }
 
 
@@ -143,7 +169,6 @@ class WallController extends Controller
             'urls.small' => 'required|max:255',
             'urls.raw' => 'nullable|max:255',
             'urls.regular' => 'nullable|max:255',
-
 
             'tags' => 'required|array',
             'tags.*' => 'required|max:50',

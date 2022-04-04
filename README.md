@@ -77,6 +77,11 @@ GET list/category
 GET list/color
 GET init
 ```
+
+### For Slide Show (Featured):
+```
+GET featured/
+```
 ## Admin Routes:
 
 ### For Wallpapers:
