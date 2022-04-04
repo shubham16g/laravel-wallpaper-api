@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFeaturedTable extends Migration
+class CreateFeaturedsTable extends Migration
 {
     /**
      * Run the migrations.
