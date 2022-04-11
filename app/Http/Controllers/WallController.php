@@ -136,28 +136,6 @@ class WallController extends Controller
         return $this->filterPagination(((object)$walls->paginate(18))->toArray());
     }
 
-    public function featured()
-    {
-        // return Featured::select('wall_id')->get();
-        $featured = Featured::all();
-        $walls = Wall::with('allTags')->with('author')->leftJoin('all_wall_tags', 'all_wall_tags.wall_id', '=', 'walls.wall_id')
-        ->join('all_tags', 'all_tags.all_tag_id', '=', 'all_wall_tags.all_tag_id')
-        ->select('walls.*')
-        ->groupBy('all_wall_tags.wall_id');
-        $walls->whereIn('walls.wall_id', array_map(function ($item) {
-            return $item['wall_id'];
-        }, $featured->toArray()));
-        $data = $walls->get()->toArray();
-        $this->filterWallList($data);
-        return [
-            'data' => $data,
-            'titles' => array_map(function ($item) {
-                return $item['title'];
-            }, $featured->toArray())
-        ];
-    }
-
-
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -315,5 +293,46 @@ class WallController extends Controller
             $responseArr[] = $wall != null;
         }
         return response()->json($responseArr);
+    }
+
+
+    /** ************* Featured*********************************************************/
+    public function featured()
+    {
+        // return Featured::select('wall_id')->get();
+        $featured = Featured::find(1);
+        if ($featured == null) {
+            return response()->json(['message' => 'No Featured Wallpaper Found'], 404);
+        }
+        $walls = Wall::with('allTags')->with('author')->leftJoin('all_wall_tags', 'all_wall_tags.wall_id', '=', 'walls.wall_id')
+        ->join('all_tags', 'all_tags.all_tag_id', '=', 'all_wall_tags.all_tag_id')
+        ->select('walls.*')
+        ->groupBy('all_wall_tags.wall_id');
+        $walls->where('walls.wall_id', $featured->wall_id);
+        $data = $walls->get()->toArray();
+        $this->filterWallList($data);
+        return [
+            'data' => $data[0],
+            'title' => $featured->title,
+            'sub_title' => $featured->sub_title,
+        ];
+    }
+
+    public function featuredUpdate(Request $request)
+    {
+        $request->validate([
+            'wall_id' => 'required|integer|exists:walls,wall_id',
+            'title' => 'required|string|max:100',
+            'sub_title' => 'required|string|max:255',
+        ]);
+        $featured = Featured::find(1);
+        if ($featured == null) {
+            $featured = new Featured();
+        }
+        $featured->wall_id = $request->wall_id;
+        $featured->title = $request->title;
+        $featured->sub_title = $request->sub_title;
+        $featured->save();
+        return response()->json(['message' => 'Featured Wallpaper updated successfully']);
     }
 }

@@ -78,7 +78,7 @@ GET list/color
 GET init
 ```
 
-### For Slide Show (Featured):
+### For Featured Wallpaper:
 ```
 GET featured/
 ```
@@ -158,5 +158,17 @@ Content-Type: application/json
 {
     "name": "Blue",
     "value": "#0099ff"
+}
+```
+
+### To Update or Add Featured Wallpaper:
+```
+POST featured/
+Content-Type: application/json
+
+{
+    "wall_id": 23,
+    "title": "Wallpaper of the Day",
+    "sub_title": "Gave you a nice view of the sky",
 }
 ```
