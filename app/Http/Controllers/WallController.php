@@ -325,7 +325,7 @@ class WallController extends Controller
             'feature_title' => 'string|max:255',
             'feature_description' => 'string|max:255',
             'current_version' => 'integer|min:1',
-            'immidiate_update' => 'integer|min:1',
+            'immediate_update' => 'integer|min:1',
             'play_store_url_short' => 'string|max:255',
 
         ]);
@@ -345,8 +345,8 @@ class WallController extends Controller
         if ($request->has('current_version')) {
             $baseData->current_version = $request->current_version;
         }
-        if ($request->has('immidiate_update')) {
-            $baseData->immidiate_update = $request->immidiate_update;
+        if ($request->has('immediate_update')) {
+            $baseData->immediate_update = $request->immediate_update;
         }
         if ($request->has('play_store_url_short')) {
             $baseData->play_store_url_short = $request->play_store_url_short;

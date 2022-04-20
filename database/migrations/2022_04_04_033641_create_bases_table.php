@@ -20,7 +20,7 @@ class CreateBasesTable extends Migration
             $table->string('featured_title', 255);
             $table->string('featured_description', 255)->nullable();
             $table->integer('current_version')->unsigned()->default(1);
-            $table->integer('immidiate_update')->unsigned()->nullable();
+            $table->integer('immediate_update')->unsigned()->nullable();
             $table->string('play_store_url_short',255)->nullable();
         });
     }
