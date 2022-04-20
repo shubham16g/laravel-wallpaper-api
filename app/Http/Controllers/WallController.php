@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AllTag;
 use App\Models\AllWallTag;
 use App\Models\Author;
-use App\Models\Featured;
+use App\Models\Base;
 use App\Models\Wall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -99,7 +99,8 @@ class WallController extends Controller
         return $response;
     }
 
-    private function filterWallList(array &$data){
+    private function filterWallList(array &$data)
+    {
         foreach ($data as $key => $wall) {
             if (isset($wall['all_tags'])) {
 
@@ -121,7 +122,8 @@ class WallController extends Controller
         }
     }
 
-    public function list(Request $request){
+    public function list(Request $request)
+    {
         $request->validate([
             'list' => 'required|array',
             'list.*' => 'required|integer',
@@ -297,42 +299,59 @@ class WallController extends Controller
 
 
     /** ************* Featured*********************************************************/
-    public function featured()
+    public function base()
     {
         // return Featured::select('wall_id')->get();
-        $featured = Featured::find(1);
-        if ($featured == null) {
-            return response()->json(['message' => 'No Featured Wallpaper Found'], 404);
+        $baseData = Base::find(1);
+        if ($baseData == null) {
+            return response()->json(['message' => 'Base Data not found'], 404);
         }
         $walls = Wall::with('allTags')->with('author')->leftJoin('all_wall_tags', 'all_wall_tags.wall_id', '=', 'walls.wall_id')
-        ->join('all_tags', 'all_tags.all_tag_id', '=', 'all_wall_tags.all_tag_id')
-        ->select('walls.*')
-        ->groupBy('all_wall_tags.wall_id');
-        $walls->where('walls.wall_id', $featured->wall_id);
+            ->join('all_tags', 'all_tags.all_tag_id', '=', 'all_wall_tags.all_tag_id')
+            ->select('walls.*')
+            ->groupBy('all_wall_tags.wall_id');
+        $walls->where('walls.wall_id', $baseData->featured);
         $data = $walls->get()->toArray();
         $this->filterWallList($data);
-        return [
-            'data' => $data[0],
-            'title' => $featured->title,
-            'sub_title' => $featured->sub_title,
-        ];
+        $baseData->featured = $data[0];
+        unset($baseData->id);
+        return $baseData;
     }
 
-    public function featuredUpdate(Request $request)
+    public function baseUpdate(Request $request)
     {
         $request->validate([
-            'wall_id' => 'required|integer|exists:walls,wall_id',
-            'title' => 'required|string|max:100',
-            'sub_title' => 'required|string|max:255',
+            'featured' => 'integer|exists:walls,wall_id',
+            'feature_title' => 'string|max:255',
+            'feature_description' => 'string|max:255',
+            'current_version' => 'integer|min:1',
+            'immidiate_update' => 'integer|min:1',
+            'play_store_url_short' => 'string|max:255',
+
         ]);
-        $featured = Featured::find(1);
-        if ($featured == null) {
-            $featured = new Featured();
+        $baseData = Base::find(1);
+        if ($baseData == null) {
+            $baseData = new Base();
         }
-        $featured->wall_id = $request->wall_id;
-        $featured->title = $request->title;
-        $featured->sub_title = $request->sub_title;
-        $featured->save();
-        return response()->json(['message' => 'Featured Wallpaper updated successfully']);
+        if ($request->has('featured')) {
+            $baseData->featured = $request->featured;
+        }
+        if ($request->has('feature_title')) {
+            $baseData->feature_title = $request->feature_title;
+        }
+        if ($request->has('feature_description')) {
+            $baseData->feature_description = $request->feature_description;
+        }
+        if ($request->has('current_version')) {
+            $baseData->current_version = $request->current_version;
+        }
+        if ($request->has('immidiate_update')) {
+            $baseData->immidiate_update = $request->immidiate_update;
+        }
+        if ($request->has('play_store_url_short')) {
+            $baseData->play_store_url_short = $request->play_store_url_short;
+        }
+        $baseData->save();
+        return response()->json(['message' => 'Base data updated successfully']);
     }
 }

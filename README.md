@@ -78,9 +78,9 @@ GET list/color
 GET init
 ```
 
-### For Featured Wallpaper:
+### For Base Data:
 ```
-GET featured/
+GET base/
 ```
 ## Admin Routes:
 
@@ -161,14 +161,17 @@ Content-Type: application/json
 }
 ```
 
-### To Update or Add Featured Wallpaper:
+### To Update Base Data:
 ```
-POST featured/
+POST base/
 Content-Type: application/json
 
 {
-    "wall_id": 23,
-    "title": "Wallpaper of the Day",
-    "sub_title": "Gave you a nice view of the sky",
+    "featured": 23,
+    "featured_title": "Wallpaper of the Day",
+    "featured_description": "Gave you a nice view of the sky",
+    "current_version": 2,
+    "immidiate_update": 1,
+	"play_store_url_short": "https://bit.ly/yourshorturl"
 }
 ```
