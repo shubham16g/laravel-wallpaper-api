@@ -17,7 +17,7 @@ class CreateBasesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('featured');
             $table->foreign('featured')->references('wall_id')->on('walls');
-            $table->string('featured_title', 255);
+            $table->string('featured_title', 255)->nullable();
             $table->string('featured_description', 255)->nullable();
             $table->integer('current_version')->unsigned()->default(1);
             $table->integer('immediate_update')->unsigned()->nullable();
