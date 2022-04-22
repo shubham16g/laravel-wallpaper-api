@@ -320,6 +320,7 @@ class WallController extends Controller
 
     public function baseUpdate(Request $request)
     {
+        // may be required to add nullable in some fields
         $request->validate([
             'featured' => 'integer|exists:walls,wall_id',
             'feature_title' => 'string|max:255',
